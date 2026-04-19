@@ -8,93 +8,122 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #1a1a2e; color: #eee; height: 100vh; display: flex; }
         
-        .sidebar { width: 260px; background: #16213e; display: flex; flex-direction: column; border-right: 1px solid #333; }
+        .sidebar { width: 280px; background: #16213e; display: flex; flex-direction: column; border-right: 1px solid #333; }
         .sidebar-header { padding: 15px; border-bottom: 1px solid #333; }
-        .new-chat-btn { width: 100%; padding: 12px; background: #0f3460; border: 1px solid #444; color: #fff; border-radius: 8px; cursor: pointer; font-size: 14px; }
+        .new-chat-btn { width: 100%; padding: 12px; background: #0f3460; border: 1px solid #444; color: #fff; border-radius: 8px; cursor: pointer; font-size: 14px; transition: all 0.2s; }
         .new-chat-btn:hover { background: #1a4a7a; }
         .chat-list { flex: 1; overflow-y: auto; padding: 10px; }
-        .chat-item { padding: 12px; margin-bottom: 5px; background: #1a1a2e; border-radius: 8px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .chat-item { padding: 12px; margin-bottom: 5px; background: #1a1a2e; border-radius: 8px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: all 0.2s; }
         .chat-item:hover, .chat-item.active { background: #0f3460; }
         .chat-item-title { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; }
-        .chat-item-delete { color: #666; padding: 5px; display: none; }
+        .chat-item-delete { color: #666; padding: 5px; display: none; font-size: 12px; }
         .chat-item:hover .chat-item-delete { display: block; }
         .chat-item-delete:hover { color: #e94560; }
         
         .sidebar-footer { padding: 10px; border-top: 1px solid #333; }
-        .current-api { padding: 10px; background: #1a1a2e; border-radius: 8px; margin-bottom: 10px; font-size: 12px; }
+        .current-api { padding: 10px; background: #1a1a2e; border-radius: 8px; margin-bottom: 8px; font-size: 12px; cursor: pointer; transition: all 0.2s; }
+        .current-api:hover { background: #0f3460; }
         .current-api-label { color: #888; margin-bottom: 4px; }
         .current-api-name { color: #4ade80; font-weight: 500; }
-        .settings-btn { width: 100%; padding: 10px; background: transparent; border: 1px solid #444; color: #aaa; border-radius: 8px; cursor: pointer; }
-        .settings-btn:hover { background: #1a1a2e; color: #fff; }
+        .footer-btns { display: flex; gap: 8px; }
+        .footer-btn { flex: 1; padding: 10px; background: transparent; border: 1px solid #444; color: #aaa; border-radius: 8px; cursor: pointer; font-size: 12px; transition: all 0.2s; }
+        .footer-btn:hover { background: #1a1a2e; color: #fff; border-color: #666; }
 
-        .main { flex: 1; display: flex; flex-direction: column; }
-        .chat-header { padding: 15px 20px; border-bottom: 1px solid #333; font-weight: 500; display: flex; align-items: center; }
+        .main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+        .chat-header { padding: 15px 20px; border-bottom: 1px solid #333; font-weight: 500; display: flex; align-items: center; gap: 10px; }
         .messages { flex: 1; overflow-y: auto; padding: 20px; }
         .message { margin-bottom: 20px; display: flex; gap: 12px; }
         .message.user { flex-direction: row-reverse; }
         .message-avatar { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
-        .message.assistant .message-avatar { background: #0f3460; }
-        .message.user .message-avatar { background: #e94560; }
-        .message-content { max-width: 70%; padding: 12px 16px; border-radius: 12px; line-height: 1.6; white-space: pre-wrap; word-break: break-word; }
+        .message.assistant .message-avatar { background: linear-gradient(135deg, #0f3460, #16213e); }
+        .message.user .message-avatar { background: linear-gradient(135deg, #e94560, #ff6b6b); }
+        .message-content { max-width: 75%; padding: 14px 18px; border-radius: 16px; line-height: 1.7; word-break: break-word; }
         .message.assistant .message-content { background: #16213e; border-bottom-left-radius: 4px; }
-        .message.user .message-content { background: #0f3460; border-bottom-right-radius: 4px; }
-        .message-image { max-width: 300px; max-height: 300px; border-radius: 8px; margin-bottom: 8px; cursor: pointer; }
-        .message-image:hover { opacity: 0.9; }
+        .message.user .message-content { background: linear-gradient(135deg, #0f3460, #1a4a7a); border-bottom-right-radius: 4px; }
+        .message-content pre { background: #0d1b2a; padding: 12px; border-radius: 8px; overflow-x: auto; margin: 10px 0; }
+        .message-content code { font-family: 'Consolas', 'Monaco', monospace; font-size: 13px; }
+        .message-content p { margin: 8px 0; }
+        .message-content ul, .message-content ol { margin: 8px 0; padding-left: 20px; }
+        .message-content li { margin: 4px 0; }
+        .message-content a { color: #4ade80; }
+        .message-content strong { color: #fff; }
+        .message-image { max-width: 300px; max-height: 300px; border-radius: 8px; margin-bottom: 10px; cursor: pointer; transition: transform 0.2s; }
+        .message-image:hover { transform: scale(1.02); }
 
-        .input-area { padding: 20px; border-top: 1px solid #333; }
-        .image-preview { display: none; padding: 10px; margin-bottom: 10px; background: #16213e; border-radius: 8px; max-width: 800px; margin-left: auto; margin-right: auto; }
+        .input-area { padding: 20px; border-top: 1px solid #333; background: #16213e; }
+        .image-preview { display: none; padding: 10px; margin-bottom: 10px; background: #1a1a2e; border-radius: 8px; max-width: 800px; margin-left: auto; margin-right: auto; }
         .image-preview.show { display: flex; align-items: center; gap: 10px; }
         .image-preview img { max-height: 80px; border-radius: 8px; }
-        .image-preview-remove { background: #e94560; border: none; color: white; width: 24px; height: 24px; border-radius: 50%; cursor: pointer; font-size: 16px; }
+        .image-preview-remove { background: #e94560; border: none; color: white; width: 24px; height: 24px; border-radius: 50%; cursor: pointer; font-size: 14px; }
         .input-wrapper { display: flex; gap: 10px; max-width: 800px; margin: 0 auto; align-items: flex-end; }
-        .input-wrapper textarea { flex: 1; padding: 12px 16px; background: #16213e; border: 1px solid #333; color: #eee; border-radius: 12px; resize: none; font-size: 14px; font-family: inherit; min-height: 48px; max-height: 200px; }
-        .input-wrapper textarea:focus { outline: none; border-color: #0f3460; }
+        .input-wrapper textarea { flex: 1; padding: 14px 18px; background: #1a1a2e; border: 1px solid #333; color: #eee; border-radius: 12px; resize: none; font-size: 15px; font-family: inherit; min-height: 52px; max-height: 200px; transition: border-color 0.2s; }
+        .input-wrapper textarea:focus { outline: none; border-color: #4ade80; }
+        .input-wrapper textarea::placeholder { color: #666; }
         .input-btns { display: flex; gap: 8px; }
-        .upload-btn { padding: 12px 16px; background: #16213e; border: 1px solid #333; color: #aaa; border-radius: 12px; cursor: pointer; font-size: 18px; }
-        .upload-btn:hover { background: #0f3460; color: #fff; }
-        .send-btn { padding: 12px 24px; background: #e94560; border: none; color: #fff; border-radius: 12px; cursor: pointer; font-size: 14px; }
-        .send-btn:hover { background: #ff6b6b; }
-        .send-btn:disabled { background: #444; cursor: not-allowed; }
+        .icon-btn { width: 48px; height: 48px; background: #1a1a2e; border: 1px solid #333; color: #aaa; border-radius: 12px; cursor: pointer; font-size: 20px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+        .icon-btn:hover { background: #0f3460; color: #fff; border-color: #0f3460; }
+        .send-btn { padding: 14px 28px; background: linear-gradient(135deg, #e94560, #ff6b6b); border: none; color: #fff; border-radius: 12px; cursor: pointer; font-size: 15px; font-weight: 500; transition: all 0.2s; }
+        .send-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(233, 69, 96, 0.4); }
+        .send-btn:disabled { background: #444; cursor: not-allowed; transform: none; box-shadow: none; }
 
-        .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); align-items: center; justify-content: center; z-index: 100; }
+        .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); align-items: center; justify-content: center; z-index: 100; }
         .modal.show { display: flex; }
-        .modal-content { background: #16213e; border-radius: 16px; padding: 24px; width: 90%; max-width: 500px; max-height: 80vh; overflow-y: auto; }
+        .modal-content { background: #16213e; border-radius: 16px; padding: 24px; width: 90%; max-width: 550px; max-height: 85vh; overflow-y: auto; }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .modal-header h2 { font-size: 18px; }
-        .modal-close { background: none; border: none; color: #aaa; font-size: 24px; cursor: pointer; }
+        .modal-close { background: none; border: none; color: #aaa; font-size: 28px; cursor: pointer; line-height: 1; }
+        .modal-close:hover { color: #fff; }
         .form-group { margin-bottom: 16px; }
-        .form-group label { display: block; margin-bottom: 6px; color: #aaa; font-size: 13px; }
-        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px 12px; background: #1a1a2e; border: 1px solid #333; color: #eee; border-radius: 8px; font-size: 14px; font-family: inherit; }
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: #0f3460; }
-        .form-group textarea { min-height: 80px; resize: vertical; }
-        .save-btn { width: 100%; padding: 12px; background: #e94560; border: none; color: #fff; border-radius: 8px; cursor: pointer; font-size: 14px; margin-top: 10px; }
-        .save-btn:hover { background: #ff6b6b; }
+        .form-group label { display: block; margin-bottom: 8px; color: #aaa; font-size: 13px; font-weight: 500; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px 14px; background: #1a1a2e; border: 1px solid #333; color: #eee; border-radius: 8px; font-size: 14px; font-family: inherit; transition: border-color 0.2s; }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: #4ade80; }
+        .form-group textarea { min-height: 100px; resize: vertical; }
+        .save-btn { width: 100%; padding: 14px; background: linear-gradient(135deg, #e94560, #ff6b6b); border: none; color: #fff; border-radius: 8px; cursor: pointer; font-size: 15px; font-weight: 500; margin-top: 10px; transition: all 0.2s; }
+        .save-btn:hover { transform: translateY(-1px); }
         
-        .api-tabs { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
-        .api-tab { padding: 8px 16px; background: #1a1a2e; border: 1px solid #333; color: #aaa; border-radius: 8px; cursor: pointer; font-size: 13px; }
-        .api-tab:hover { border-color: #e94560; color: #fff; }
-        .api-tab.active { background: #e94560; border-color: #e94560; color: #fff; }
+        .api-tabs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+        .api-tab { padding: 10px 18px; background: #1a1a2e; border: 1px solid #333; color: #aaa; border-radius: 8px; cursor: pointer; font-size: 13px; transition: all 0.2s; }
+        .api-tab:hover { border-color: #4ade80; color: #fff; }
+        .api-tab.active { background: linear-gradient(135deg, #4ade80, #22c55e); border-color: #4ade80; color: #000; font-weight: 500; }
+
+        .memory-list { max-height: 300px; overflow-y: auto; margin-bottom: 15px; }
+        .memory-item { display: flex; justify-content: space-between; align-items: flex-start; padding: 12px; background: #1a1a2e; border-radius: 8px; margin-bottom: 8px; gap: 10px; }
+        .memory-item-content { flex: 1; font-size: 14px; line-height: 1.5; word-break: break-word; }
+        .memory-item-time { font-size: 11px; color: #666; margin-top: 4px; }
+        .memory-item-delete { background: none; border: none; color: #666; cursor: pointer; font-size: 16px; padding: 4px; }
+        .memory-item-delete:hover { color: #e94560; }
+        .memory-input-row { display: flex; gap: 10px; }
+        .memory-input-row input { flex: 1; }
+        .memory-add-btn { padding: 12px 20px; background: #0f3460; border: none; color: #fff; border-radius: 8px; cursor: pointer; font-size: 14px; }
+        .memory-add-btn:hover { background: #1a4a7a; }
+        .memory-empty { text-align: center; color: #666; padding: 30px; }
 
         @media (max-width: 768px) {
-            .sidebar { display: none; position: fixed; top: 0; left: 0; bottom: 0; z-index: 50; }
+            .sidebar { display: none; position: fixed; top: 0; left: 0; bottom: 0; z-index: 50; width: 85%; max-width: 300px; }
             .sidebar.show { display: flex; }
-            .menu-btn { display: block !important; }
-            .message-content { max-width: 85%; }
+            .menu-btn { display: flex !important; }
+            .message-content { max-width: 90%; }
+            .input-wrapper { flex-wrap: wrap; }
+            .input-wrapper textarea { min-width: 100%; }
         }
-        .menu-btn { display: none; background: none; border: none; color: #eee; font-size: 24px; cursor: pointer; margin-right: 10px; }
+        .menu-btn { display: none; background: none; border: none; color: #eee; font-size: 24px; cursor: pointer; align-items: center; justify-content: center; }
         .overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 40; }
         .overlay.show { display: block; }
 
-        .typing { display: flex; gap: 4px; padding: 8px 0; }
-        .typing span { width: 8px; height: 8px; background: #aaa; border-radius: 50%; animation: bounce 1.4s infinite ease-in-out; }
+        .typing { display: inline-flex; gap: 4px; padding: 4px 0; }
+        .typing span { width: 8px; height: 8px; background: #4ade80; border-radius: 50%; animation: bounce 1.4s infinite ease-in-out; }
         .typing span:nth-child(1) { animation-delay: -0.32s; }
         .typing span:nth-child(2) { animation-delay: -0.16s; }
         @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
 
-        .image-modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); z-index: 200; align-items: center; justify-content: center; }
+        .image-modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.95); z-index: 200; align-items: center; justify-content: center; cursor: zoom-out; }
         .image-modal.show { display: flex; }
-        .image-modal img { max-width: 90%; max-height: 90%; object-fit: contain; }
-        .image-modal-close { position: absolute; top: 20px; right: 20px; background: none; border: none; color: white; font-size: 32px; cursor: pointer; }
+        .image-modal img { max-width: 95%; max-height: 95%; object-fit: contain; border-radius: 8px; }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #444; }
     </style>
 </head>
 <body>
@@ -106,11 +135,14 @@
         </div>
         <div class="chat-list" id="chatList"></div>
         <div class="sidebar-footer">
-            <div class="current-api">
+            <div class="current-api" onclick="openSettings()">
                 <div class="current-api-label">当前 API</div>
                 <div class="current-api-name" id="currentApiName">未配置</div>
             </div>
-            <button class="settings-btn" onclick="openSettings()">⚙️ API 设置</button>
+            <div class="footer-btns">
+                <button class="footer-btn" onclick="openSettings()">⚙️ API</button>
+                <button class="footer-btn" onclick="openMemory()">🧠 记忆</button>
+            </div>
         </div>
     </div>
 
@@ -126,9 +158,9 @@
                 <button class="image-preview-remove" onclick="removeImage()">×</button>
             </div>
             <div class="input-wrapper">
-                <textarea id="input" placeholder="输入消息... (支持粘贴图片)" rows="1" onkeydown="handleKeydown(event)" onpaste="handlePaste(event)"></textarea>
+                <textarea id="input" placeholder="输入消息，Shift+Enter 换行，支持粘贴图片..." rows="1" onkeydown="handleKeydown(event)" onpaste="handlePaste(event)"></textarea>
                 <div class="input-btns">
-                    <label class="upload-btn" title="上传图片">
+                    <label class="icon-btn" title="上传图片">
                         📷
                         <input type="file" accept="image/*" style="display:none" onchange="handleFileSelect(event)">
                     </label>
@@ -138,20 +170,17 @@
         </div>
     </div>
 
+    <!-- API设置弹窗 -->
     <div class="modal" id="settingsModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>API 设置</h2>
+                <h2>⚙️ API 设置</h2>
                 <button class="modal-close" onclick="closeSettings()">×</button>
             </div>
-            <div class="api-tabs" id="apiTabs">
-                <button class="api-tab active" onclick="switchApiTab(0)">API 1</button>
-                <button class="api-tab" onclick="switchApiTab(1)">API 2</button>
-                <button class="api-tab" onclick="switchApiTab(2)">API 3</button>
-            </div>
+            <div class="api-tabs" id="apiTabs"></div>
             <div class="form-group">
-                <label>API 名称（自定义标识）</label>
-                <input type="text" id="apiName" placeholder="例如：Aipaibox Claude">
+                <label>API 名称</label>
+                <input type="text" id="apiName" placeholder="例如：Claude Opus">
             </div>
             <div class="form-group">
                 <label>API 地址</label>
@@ -166,19 +195,36 @@
                 <input type="text" id="model" placeholder="claude-opus-4-7">
             </div>
             <div class="form-group">
-                <label>系统提示词（可选）</label>
+                <label>系统提示词</label>
                 <textarea id="systemPrompt" placeholder="你是一个有帮助的AI助手..."></textarea>
             </div>
-            <button class="save-btn" onclick="saveSettings()">保存并使用此 API</button>
+            <button class="save-btn" onclick="saveSettings()">💾 保存并使用此 API</button>
         </div>
     </div>
 
+    <!-- 记忆弹窗 -->
+    <div class="modal" id="memoryModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🧠 全局记忆</h2>
+                <button class="modal-close" onclick="closeMemory()">×</button>
+            </div>
+            <p style="color:#888;font-size:13px;margin-bottom:15px;">记忆会自动附加到所有对话中，帮助 AI 更好地了解你。</p>
+            <div class="memory-list" id="memoryList"></div>
+            <div class="memory-input-row">
+                <input type="text" id="memoryInput" placeholder="添加新记忆，如：我是一名程序员" onkeydown="if(event.key==='Enter')addMemory()">
+                <button class="memory-add-btn" onclick="addMemory()">添加</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 图片预览弹窗 -->
     <div class="image-modal" id="imageModal" onclick="closeImageModal()">
-        <button class="image-modal-close">×</button>
         <img id="modalImage" src="" alt="">
     </div>
 
     <script>
+        // ========== 数据存储 ==========
         let chats = JSON.parse(localStorage.getItem('chats')) || [];
         let currentChatId = localStorage.getItem('currentChatId') || null;
         let apiConfigs = JSON.parse(localStorage.getItem('apiConfigs')) || [
@@ -188,8 +234,10 @@
         ];
         let currentApiIndex = parseInt(localStorage.getItem('currentApiIndex')) || 0;
         let currentEditingApi = 0;
+        let memories = JSON.parse(localStorage.getItem('memories')) || [];
         let pendingImage = null;
 
+        // ========== 初始化 ==========
         function init() {
             if (chats.length === 0) newChat();
             else renderChatList();
@@ -198,6 +246,7 @@
             autoResize(document.getElementById('input'));
         }
 
+        // ========== 对话管理 ==========
         function newChat() {
             const chat = { id: Date.now().toString(), title: '新对话', messages: [] };
             chats.unshift(chat);
@@ -227,14 +276,28 @@
             toggleSidebar(false);
         }
 
+        function deleteChat(id) {
+            if (!confirm('确定删除这个对话吗？')) return;
+            chats = chats.filter(c => c.id !== id);
+            if (currentChatId === id) {
+                currentChatId = chats[0]?.id || null;
+                if (currentChatId) loadChat(currentChatId);
+                else newChat();
+            }
+            saveChats();
+            renderChatList();
+        }
+
+        // ========== 消息渲染 ==========
         function renderMessages(messages) {
             const container = document.getElementById('messages');
             container.innerHTML = messages.map(msg => {
                 let content = '';
                 if (msg.image) {
-                    content += `<img class="message-image" src="${msg.image}" onclick="showImageModal('${msg.image}')" alt="uploaded image">`;
+                    content += `<img class="message-image" src="${msg.image}" onclick="showImageModal(this.src)" alt="image">`;
                 }
-                content += `<div>${escapeHtml(msg.content)}</div>`;
+                const textContent = msg.role === 'assistant' ? renderMarkdown(msg.content) : escapeHtml(msg.content);
+                content += `<div>${textContent}</div>`;
                 return `
                     <div class="message ${msg.role}">
                         <div class="message-avatar">${msg.role === 'user' ? '你' : 'AI'}</div>
@@ -245,6 +308,40 @@
             container.scrollTop = container.scrollHeight;
         }
 
+        function renderMarkdown(text) {
+            if (!text) return '';
+            // 转义HTML
+            text = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            // 代码块
+            text = text.replace(/```(\w*)\n?([\s\S]*?)```/g, '<pre><code>$2</code></pre>');
+            // 行内代码
+            text = text.replace(/`([^`]+)`/g, '<code style="background:#0d1b2a;padding:2px 6px;border-radius:4px;font-size:13px;">$1</code>');
+            // 加粗
+            text = text.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+            // 斜体
+            text = text.replace(/(?<!\*)\*([^*]+)\*(?!\*)/g, '<em>$1</em>');
+            // 标题
+            text = text.replace(/^### (.+)$/gm, '<h4 style="margin:12px 0 8px;color:#4ade80;">$1</h4>');
+            text = text.replace(/^## (.+)$/gm, '<h3 style="margin:14px 0 10px;color:#4ade80;">$1</h3>');
+            text = text.replace(/^# (.+)$/gm, '<h2 style="margin:16px 0 12px;color:#4ade80;">$1</h2>');
+            // 列表
+            text = text.replace(/^- (.+)$/gm, '<li style="margin-left:20px;">$1</li>');
+            text = text.replace(/^\d+\. (.+)$/gm, '<li style="margin-left:20px;">$1</li>');
+            // 链接
+            text = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" style="color:#4ade80;text-decoration:underline;">$1</a>');
+            // 换行
+            text = text.replace(/\n/g, '<br>');
+            return text;
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML.replace(/\n/g, '<br>');
+        }
+
+        // ========== 图片处理 ==========
         function handleFileSelect(event) {
             const file = event.target.files[0];
             if (file) processImage(file);
@@ -264,6 +361,10 @@
         }
 
         function processImage(file) {
+            if (file.size > 10 * 1024 * 1024) {
+                alert('图片太大，请选择小于 10MB 的图片');
+                return;
+            }
             const reader = new FileReader();
             reader.onload = (e) => {
                 pendingImage = e.target.result;
@@ -278,6 +379,16 @@
             document.getElementById('imagePreview').classList.remove('show');
         }
 
+        function showImageModal(src) {
+            document.getElementById('modalImage').src = src;
+            document.getElementById('imageModal').classList.add('show');
+        }
+
+        function closeImageModal() {
+            document.getElementById('imageModal').classList.remove('show');
+        }
+
+        // ========== 发送消息 ==========
         async function sendMessage() {
             const input = document.getElementById('input');
             const content = input.value.trim();
@@ -293,26 +404,28 @@
             const chat = chats.find(c => c.id === currentChatId);
             if (!chat) return;
 
-            const userMessage = { role: 'user', content: content || '(图片)' };
+            // 添加用户消息
+            const userMessage = { role: 'user', content: content || '(查看图片)' };
             if (pendingImage) userMessage.image = pendingImage;
-            
             chat.messages.push(userMessage);
+
             if (chat.title === '新对话' && content) {
-                chat.title = content.slice(0, 20) + (content.length > 20 ? '...' : '');
+                chat.title = content.slice(0, 25) + (content.length > 25 ? '...' : '');
                 document.getElementById('chatTitle').textContent = chat.title;
                 renderChatList();
             }
             saveChats();
             renderMessages(chat.messages);
-            
-            const sentImage = pendingImage;
+
             input.value = '';
             removeImage();
             autoResize(input);
 
+            // 显示加载动画
             const messagesDiv = document.getElementById('messages');
             const loadingDiv = document.createElement('div');
             loadingDiv.className = 'message assistant';
+            loadingDiv.id = 'loading';
             loadingDiv.innerHTML = `<div class="message-avatar">AI</div><div class="message-content"><div class="typing"><span></span><span></span><span></span></div></div>`;
             messagesDiv.appendChild(loadingDiv);
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
@@ -320,11 +433,18 @@
             document.getElementById('sendBtn').disabled = true;
 
             try {
+                // 构建API消息
                 const apiMessages = [];
-                if (config.systemPrompt) {
-                    apiMessages.push({ role: 'system', content: config.systemPrompt });
-                }
                 
+                // 系统提示词 + 记忆
+                let systemContent = config.systemPrompt || '你是一个有帮助的AI助手。';
+                if (memories.length > 0) {
+                    systemContent += '\n\n【用户记忆信息】\n' + memories.map(m => '- ' + m.content).join('\n');
+                    systemContent += '\n\n请根据以上记忆信息更好地回答用户问题。如果用户分享了新的个人信息，可以在回复末尾用【建议记忆】标注值得记住的内容。';
+                }
+                apiMessages.push({ role: 'system', content: systemContent });
+
+                // 历史消息
                 for (const msg of chat.messages) {
                     if (msg.image) {
                         apiMessages.push({
@@ -354,35 +474,39 @@
 
                 if (!response.ok) {
                     const errorData = await response.json().catch(() => ({}));
-                    throw new Error(errorData.error?.message || `HTTP ${response.status}`);
+                    throw new Error(errorData.error?.message || `请求失败: ${response.status}`);
                 }
 
                 const data = await response.json();
-                const assistantContent = data.choices[0].message.content;
+                let assistantContent = data.choices[0].message.content;
+
+                // 检查是否有建议记忆
+                const memoryMatch = assistantContent.match(/【建议记忆】(.+?)(?:\n|$)/);
+                if (memoryMatch) {
+                    const suggestedMemory = memoryMatch[1].trim();
+                    if (suggestedMemory && confirm(`AI 建议记住：\n"${suggestedMemory}"\n\n是否添加到记忆？`)) {
+                        memories.push({ content: suggestedMemory, time: Date.now() });
+                        localStorage.setItem('memories', JSON.stringify(memories));
+                    }
+                    // 从回复中移除建议记忆部分
+                    assistantContent = assistantContent.replace(/【建议记忆】.+?(?:\n|$)/, '').trim();
+                }
+
                 chat.messages.push({ role: 'assistant', content: assistantContent });
                 saveChats();
+                
+                document.getElementById('loading')?.remove();
                 renderMessages(chat.messages);
 
             } catch (error) {
-                loadingDiv.remove();
+                document.getElementById('loading')?.remove();
                 alert('发送失败: ' + error.message);
             } finally {
                 document.getElementById('sendBtn').disabled = false;
             }
         }
 
-        function deleteChat(id) {
-            if (!confirm('确定删除这个对话吗？')) return;
-            chats = chats.filter(c => c.id !== id);
-            if (currentChatId === id) {
-                currentChatId = chats[0]?.id || null;
-                if (currentChatId) loadChat(currentChatId);
-                else newChat();
-            }
-            saveChats();
-            renderChatList();
-        }
-
+        // ========== API 设置 ==========
         function openSettings() {
             currentEditingApi = currentApiIndex;
             renderApiTabs();
@@ -436,7 +560,7 @@
             localStorage.setItem('currentApiIndex', currentApiIndex);
             updateCurrentApiDisplay();
             closeSettings();
-            alert('设置已保存，当前使用: ' + apiConfigs[currentApiIndex].name);
+            alert('✅ 设置已保存！当前使用: ' + apiConfigs[currentApiIndex].name);
         }
 
         function updateCurrentApiDisplay() {
@@ -444,23 +568,52 @@
             document.getElementById('currentApiName').textContent = config.name || '未配置';
         }
 
-        function showImageModal(src) {
-            document.getElementById('modalImage').src = src;
-            document.getElementById('imageModal').classList.add('show');
+        // ========== 记忆管理 ==========
+        function openMemory() {
+            renderMemoryList();
+            document.getElementById('memoryModal').classList.add('show');
         }
 
-        function closeImageModal() {
-            document.getElementById('imageModal').classList.remove('show');
+        function closeMemory() {
+            document.getElementById('memoryModal').classList.remove('show');
         }
 
+        function renderMemoryList() {
+            const list = document.getElementById('memoryList');
+            if (memories.length === 0) {
+                list.innerHTML = '<div class="memory-empty">暂无记忆<br><small>添加一些关于你的信息，AI 会记住它们</small></div>';
+                return;
+            }
+            list.innerHTML = memories.map((m, i) => `
+                <div class="memory-item">
+                    <div class="memory-item-content">
+                        ${escapeHtml(m.content)}
+                        <div class="memory-item-time">${new Date(m.time).toLocaleString()}</div>
+                    </div>
+                    <button class="memory-item-delete" onclick="deleteMemory(${i})">×</button>
+                </div>
+            `).join('');
+        }
+
+        function addMemory() {
+            const input = document.getElementById('memoryInput');
+            const content = input.value.trim();
+            if (!content) return;
+            memories.push({ content, time: Date.now() });
+            localStorage.setItem('memories', JSON.stringify(memories));
+            input.value = '';
+            renderMemoryList();
+        }
+
+        function deleteMemory(index) {
+            memories.splice(index, 1);
+            localStorage.setItem('memories', JSON.stringify(memories));
+            renderMemoryList();
+        }
+
+        // ========== 工具函数 ==========
         function saveChats() {
             localStorage.setItem('chats', JSON.stringify(chats));
-        }
-
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
         }
 
         function handleKeydown(e) {
@@ -487,6 +640,7 @@
             overlay.classList.toggle('show', show);
         }
 
+        // 启动
         init();
     </script>
 </body>
