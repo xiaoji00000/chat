@@ -27,9 +27,9 @@ textarea { resize: none; }
 .session-item:hover { background: #e2e8f0; }
 .session-item.active { background: #e0f2fe; border-color: #bae6fd; color: #0369a1; font-weight: 500; }
 
-/* 折叠记忆面板 */
-.memory-panel { background: white; border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px; }
-.memory-panel summary { font-size: 13px; font-weight: 500; color: #475569; cursor: pointer; list-style: none; user-select: none; }
+/* 折叠记忆面板 (已修复黑框) */
+.memory-panel { background: white; border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px; margin-top: 10px; }
+.memory-panel summary { font-size: 13px; font-weight: 500; color: #475569; cursor: pointer; list-style: none; user-select: none; outline: none; padding: 5px 0; }
 .memory-panel summary::-webkit-details-marker { display: none; }
 .memory-inputs { margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
 .memory-inputs textarea { height: 60px; padding: 8px; border: 1px solid #e2e8f0; border-radius: 4px; font-size: 12px; }
