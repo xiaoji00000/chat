@@ -23,7 +23,9 @@
             <textarea id="mem-preferences" placeholder="偏好 (Preferences)..."></textarea>
             <textarea id="mem-experience" placeholder="经验 (Experience)..."></textarea>
             <textarea id="mem-activity" placeholder="活动 (Activity)..."></textarea>
-            <button id="save-mem-btn">保存记忆到本地</button>
+            <button id="save-mem-btn" class="primary-btn">保存记忆到本地</button>
+            <hr style="margin: 15px 0; border: 0; border-top: 1px solid #ddd;">
+            <button id="clear-history-btn" class="danger-btn">🗑️ 清空当前对话</button>
         </aside>
 
         <main class="chat-area">
@@ -32,9 +34,11 @@
             <div class="input-area">
                 <div id="image-preview" class="image-preview hidden"></div>
                 <div class="controls">
-                    <input type="file" id="image-upload" accept="image/*" />
+                    <label for="image-upload" class="custom-upload-btn">📷 图片</label>
+                    <input type="file" id="image-upload" accept="image/*" class="hidden-input" />
+                    
                     <textarea id="user-input" placeholder="输入消息... (Ctrl+Enter 发送)"></textarea>
-                    <button id="send-btn">发送</button>
+                    <button id="send-btn" class="send-btn">发送</button>
                 </div>
             </div>
         </main>
