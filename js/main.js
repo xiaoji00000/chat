@@ -3,8 +3,11 @@ import { fetchChat } from './api.js';
 
 const memory = new MemoryManager();
 let currentImageBase64 = null;
-let chatHistory = []; 
-const HISTORY_KEY = 'chat_history_v1';
+
+// 核心数据结构：会话列表与当前激活的会话
+let sessions = [];
+let currentSessionId = null;
+const SESSIONS_KEY = 'chat_sessions_v2';
 
 const els = {
     apiKey: document.getElementById('api-key'),
@@ -14,7 +17,9 @@ const els = {
     historyBox: document.getElementById('chat-history'),
     imageUpload: document.getElementById('image-upload'),
     imagePreview: document.getElementById('image-preview'),
-    clearBtn: document.getElementById('clear-history-btn'),
+    sessionList: document.getElementById('session-list'),
+    newChatBtn: document.getElementById('new-chat-btn'),
+    deleteBtn: document.getElementById('delete-session-btn'),
     mem: {
         identity: document.getElementById('mem-identity'),
         context: document.getElementById('mem-context'),
@@ -29,22 +34,108 @@ function init() {
     els.apiKey.value = localStorage.getItem('api_key') || '';
     els.model.value = localStorage.getItem('api_model') || 'claude-opus-4-7';
     
+    // 初始化记忆
     const memData = memory.memory;
     Object.keys(els.mem).forEach(key => els.mem[key].value = memData[key]);
 
-    // 加载并渲染历史记录
-    const saved = localStorage.getItem(HISTORY_KEY);
-    if (saved) {
-        chatHistory = JSON.parse(saved);
-        chatHistory.forEach(msg => appendMessage(msg.role, msg.content, null, false));
+    // 初始化多会话系统
+    loadSessions();
+}
+
+// === 会话管理逻辑 ===
+function loadSessions() {
+    const saved = localStorage.getItem(SESSIONS_KEY);
+    sessions = saved ? JSON.parse(saved) : [];
+    
+    if (sessions.length === 0) {
+        createNewSession();
+    } else {
+        const lastSessionId = localStorage.getItem('current_session_id') || sessions[0].id;
+        switchSession(lastSessionId);
     }
 }
 
-function appendMessage(role, content, imageBase64 = null, shouldScroll = true) {
+function saveSessions() {
+    localStorage.setItem(SESSIONS_KEY, JSON.stringify(sessions));
+    localStorage.setItem('current_session_id', currentSessionId);
+}
+
+function createNewSession() {
+    const newSession = {
+        id: Date.now().toString(),
+        title: '新对话',
+        messages: []
+    };
+    sessions.unshift(newSession); // 插入到最前
+    switchSession(newSession.id);
+}
+
+function switchSession(id) {
+    // 容错：如果找不到ID，退回第一个
+    if (!sessions.find(s => s.id === id)) {
+        id = sessions.length > 0 ? sessions[0].id : null;
+    }
+    
+    currentSessionId = id;
+    saveSessions();
+    renderSessionList();
+    renderCurrentChat();
+}
+
+function deleteCurrentSession() {
+    if (sessions.length <= 1) {
+        alert("这是最后一个对话了，直接清空内容即可。");
+        sessions[0].messages = [];
+        sessions[0].title = '新对话';
+    } else {
+        sessions = sessions.filter(s => s.id !== currentSessionId);
+    }
+    saveSessions();
+    switchSession(sessions[0].id);
+}
+
+function getCurrentMessages() {
+    const session = sessions.find(s => s.id === currentSessionId);
+    return session ? session.messages : [];
+}
+
+function updateCurrentSession(messages, newTitle = null) {
+    const session = sessions.find(s => s.id === currentSessionId);
+    if (session) {
+        session.messages = messages;
+        if (newTitle && session.title === '新对话') {
+            // 自动截取用户第一句话作为标题
+            session.title = newTitle.length > 12 ? newTitle.substring(0, 12) + '...' : newTitle;
+        }
+        saveSessions();
+        renderSessionList();
+    }
+}
+
+// === UI 渲染逻辑 ===
+function renderSessionList() {
+    els.sessionList.innerHTML = '';
+    sessions.forEach(session => {
+        const li = document.createElement('li');
+        li.className = `session-item ${session.id === currentSessionId ? 'active' : ''}`;
+        li.textContent = session.title;
+        li.onclick = () => switchSession(session.id);
+        els.sessionList.appendChild(li);
+    });
+}
+
+function renderCurrentChat() {
+    els.historyBox.innerHTML = '';
+    const messages = getCurrentMessages();
+    messages.forEach(msg => {
+        // UI 回显不带图片，防止卡顿
+        appendMessageUI(msg.role, msg.content, null, false);
+    });
+}
+
+function appendMessageUI(role, content, imageBase64 = null, shouldScroll = true) {
     const div = document.createElement('div');
     div.className = `message ${role}`;
-    
-    // 只有回复消息才过 markdown
     div.innerHTML = role === 'assistant' ? marked.parse(content) : content;
 
     if (imageBase64) {
@@ -57,12 +148,11 @@ function appendMessage(role, content, imageBase64 = null, shouldScroll = true) {
     if (shouldScroll) els.historyBox.scrollTop = els.historyBox.scrollHeight;
 }
 
-els.clearBtn.addEventListener('click', () => {
-    if (confirm("确定清空对话历史吗？记忆设置会保留。")) {
-        chatHistory = [];
-        localStorage.removeItem(HISTORY_KEY);
-        els.historyBox.innerHTML = '';
-    }
+// === 事件绑定 ===
+els.newChatBtn.addEventListener('click', createNewSession);
+
+els.deleteBtn.addEventListener('click', () => {
+    if (confirm("确定要删除当前对话吗？")) deleteCurrentSession();
 });
 
 els.imageUpload.addEventListener('change', (e) => {
@@ -84,10 +174,9 @@ els.saveMemBtn.addEventListener('click', () => {
     Object.keys(els.mem).forEach(key => newMem[key] = els.mem[key].value);
     memory.save(newMem);
     
-    // 视觉反馈
     const btn = els.saveMemBtn;
     btn.textContent = '✅ 已保存';
-    setTimeout(() => btn.textContent = '保存配置与记忆', 1000);
+    setTimeout(() => btn.textContent = '保存记忆配置', 1000);
 });
 
 async function handleSend() {
@@ -95,14 +184,14 @@ async function handleSend() {
     if (!text && !currentImageBase64) return;
 
     const apiKey = els.apiKey.value;
-    const model = els.model.value;
-
     if (!apiKey) return alert("请先填写 API Key");
 
-    // UI 渲染
-    appendMessage('user', text, currentImageBase64);
+    // UI 立即反馈
+    appendMessageUI('user', text, currentImageBase64);
     
-    // 构造 Payload
+    const currentMessages = getCurrentMessages();
+    
+    // 构造请求数据
     let userMsgContent = currentImageBase64 ? [
         { type: "text", text: text || "请分析图片" },
         { type: "image_url", image_url: { url: currentImageBase64 } }
@@ -110,31 +199,35 @@ async function handleSend() {
 
     const requestMessages = [
         { role: 'system', content: memory.getSystemPrompt() },
-        ...chatHistory,
+        ...currentMessages,
         { role: 'user', content: userMsgContent }
     ];
 
-    // 重置输入状态
+    // 锁定输入区
     els.input.value = '';
     els.imagePreview.classList.add('hidden');
-    const imgBackup = currentImageBase64;
     currentImageBase64 = null;
     els.sendBtn.disabled = true;
     els.sendBtn.textContent = '...';
 
     try {
-        const reply = await fetchChat(apiKey, model, requestMessages);
-        appendMessage('assistant', reply);
+        const reply = await fetchChat(apiKey, els.model.value, requestMessages);
+        appendMessageUI('assistant', reply);
         
-        // 存入历史（不存 Base64，否则 LocalStorage 会爆）
-        chatHistory.push({ role: 'user', content: text || "[图片消息]" });
-        chatHistory.push({ role: 'assistant', content: reply });
-        localStorage.setItem(HISTORY_KEY, JSON.stringify(chatHistory));
+        // 更新并保存状态
+        currentMessages.push({ role: 'user', content: text || "[图片消息]" });
+        currentMessages.push({ role: 'assistant', content: reply });
+        
+        // 如果是该会话第一句话，把用户输入作为标题
+        const titleExtract = text ? text : "图片对话";
+        updateCurrentSession(currentMessages, titleExtract);
+        
     } catch (err) {
-        appendMessage('assistant', `❌ 错误: ${err.message}`);
+        appendMessageUI('assistant', `❌ 错误: ${err.message}`);
     } finally {
         els.sendBtn.disabled = false;
         els.sendBtn.textContent = '发送';
+        els.input.focus();
     }
 }
 
