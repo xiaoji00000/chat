@@ -2,10 +2,12 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat - 个人工作台</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Personal Study Workspace</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -21,7 +23,7 @@
 
             <div class="sidebar-section">
                 <h3>模型设置</h3>
-                <input type="password" id="api-key" placeholder="Aipaibox API Key" />
+                <input type="password" id="api-key" placeholder="API Key" />
                 <select id="model-select">
                     <option value="claude-opus-4-7">Claude Opus 4.7</option>
                     <option value="claude-opus-4-6-thinking">Claude Opus 4.6 Thinking</option>
@@ -29,14 +31,14 @@
             </div>
             
             <details class="memory-panel">
-                <summary>🧠 分层记忆系统 (点击展开)</summary>
+                <summary>🧠 分层记忆系统</summary>
                 <div class="memory-inputs">
-                    <textarea id="mem-identity" placeholder="身份 (Identity)..."></textarea>
-                    <textarea id="mem-context" placeholder="情境 (Context)..."></textarea>
-                    <textarea id="mem-preferences" placeholder="偏好 (Preferences)..."></textarea>
-                    <textarea id="mem-experience" placeholder="经验 (Experience)..."></textarea>
-                    <textarea id="mem-activity" placeholder="活动 (Activity)..."></textarea>
-                    <button id="save-mem-btn" class="secondary-btn">保存记忆配置</button>
+                    <textarea id="mem-identity" placeholder="身份 (例如: 严厉的 C++ 面试官)..."></textarea>
+                    <textarea id="mem-context" placeholder="情境..."></textarea>
+                    <textarea id="mem-preferences" placeholder="偏好 (例如: 只给思路，不给完整代码)..."></textarea>
+                    <textarea id="mem-experience" placeholder="经验..."></textarea>
+                    <textarea id="mem-activity" placeholder="活动..."></textarea>
+                    <button id="save-mem-btn" class="secondary-btn">保存配置</button>
                 </div>
             </details>
 
@@ -52,7 +54,7 @@
                     <label for="image-upload" class="custom-upload-btn">📷 图片</label>
                     <input type="file" id="image-upload" accept="image/*" style="display: none;" />
                     
-                    <textarea id="user-input" placeholder="输入消息... (Ctrl+Enter 发送)"></textarea>
+                    <textarea id="user-input" placeholder="输入问题或代码... (Ctrl+Enter 发送)"></textarea>
                     <button id="send-btn" class="send-btn">发送</button>
                 </div>
             </div>
