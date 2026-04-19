@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat - 本地记忆版</title>
+    <title>Chat - Personal Studio</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
@@ -15,6 +15,7 @@
             <select id="model-select">
                 <option value="claude-opus-4-7">Claude Opus 4.7</option>
                 <option value="claude-opus-4-6-thinking">Claude Opus 4.6 Thinking</option>
+                <option value="claude-opus-4-6">Claude Opus 4.6</option>
             </select>
             
             <h3>分层记忆系统</h3>
@@ -23,8 +24,8 @@
             <textarea id="mem-preferences" placeholder="偏好 (Preferences)..."></textarea>
             <textarea id="mem-experience" placeholder="经验 (Experience)..."></textarea>
             <textarea id="mem-activity" placeholder="活动 (Activity)..."></textarea>
-            <button id="save-mem-btn" class="primary-btn">保存记忆到本地</button>
-            <hr style="margin: 15px 0; border: 0; border-top: 1px solid #ddd;">
+            <button id="save-mem-btn" class="primary-btn">保存配置与记忆</button>
+            <hr style="margin: 15px 0; border: 0; border-top: 1px solid #eee;">
             <button id="clear-history-btn" class="danger-btn">🗑️ 清空当前对话</button>
         </aside>
 
@@ -35,9 +36,9 @@
                 <div id="image-preview" class="image-preview hidden"></div>
                 <div class="controls">
                     <label for="image-upload" class="custom-upload-btn">📷 图片</label>
-                    <input type="file" id="image-upload" accept="image/*" class="hidden-input" />
+                    <input type="file" id="image-upload" accept="image/*" style="display: none;" />
                     
-                    <textarea id="user-input" placeholder="输入消息... (Ctrl+Enter 发送)"></textarea>
+                    <textarea id="user-input" placeholder="输入消息... (Ctrl+Enter)"></textarea>
                     <button id="send-btn" class="send-btn">发送</button>
                 </div>
             </div>
