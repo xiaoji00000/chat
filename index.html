@@ -8,7 +8,6 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #1a1a2e; color: #eee; height: 100vh; display: flex; }
         
-        /* 侧边栏 */
         .sidebar { width: 260px; background: #16213e; display: flex; flex-direction: column; border-right: 1px solid #333; }
         .sidebar-header { padding: 15px; border-bottom: 1px solid #333; }
         .new-chat-btn { width: 100%; padding: 12px; background: #0f3460; border: 1px solid #444; color: #fff; border-radius: 8px; cursor: pointer; font-size: 14px; }
@@ -20,13 +19,16 @@
         .chat-item-delete { color: #666; padding: 5px; display: none; }
         .chat-item:hover .chat-item-delete { display: block; }
         .chat-item-delete:hover { color: #e94560; }
-        .settings-btn { padding: 15px; border-top: 1px solid #333; }
-        .settings-btn button { width: 100%; padding: 10px; background: transparent; border: 1px solid #444; color: #aaa; border-radius: 8px; cursor: pointer; }
-        .settings-btn button:hover { background: #1a1a2e; color: #fff; }
+        
+        .sidebar-footer { padding: 10px; border-top: 1px solid #333; }
+        .current-api { padding: 10px; background: #1a1a2e; border-radius: 8px; margin-bottom: 10px; font-size: 12px; }
+        .current-api-label { color: #888; margin-bottom: 4px; }
+        .current-api-name { color: #4ade80; font-weight: 500; }
+        .settings-btn { width: 100%; padding: 10px; background: transparent; border: 1px solid #444; color: #aaa; border-radius: 8px; cursor: pointer; }
+        .settings-btn:hover { background: #1a1a2e; color: #fff; }
 
-        /* 主聊天区 */
         .main { flex: 1; display: flex; flex-direction: column; }
-        .chat-header { padding: 15px 20px; border-bottom: 1px solid #333; font-weight: 500; }
+        .chat-header { padding: 15px 20px; border-bottom: 1px solid #333; font-weight: 500; display: flex; align-items: center; }
         .messages { flex: 1; overflow-y: auto; padding: 20px; }
         .message { margin-bottom: 20px; display: flex; gap: 12px; }
         .message.user { flex-direction: row-reverse; }
@@ -36,17 +38,24 @@
         .message-content { max-width: 70%; padding: 12px 16px; border-radius: 12px; line-height: 1.6; white-space: pre-wrap; word-break: break-word; }
         .message.assistant .message-content { background: #16213e; border-bottom-left-radius: 4px; }
         .message.user .message-content { background: #0f3460; border-bottom-right-radius: 4px; }
+        .message-image { max-width: 300px; max-height: 300px; border-radius: 8px; margin-bottom: 8px; cursor: pointer; }
+        .message-image:hover { opacity: 0.9; }
 
-        /* 输入区 */
         .input-area { padding: 20px; border-top: 1px solid #333; }
-        .input-wrapper { display: flex; gap: 10px; max-width: 800px; margin: 0 auto; }
+        .image-preview { display: none; padding: 10px; margin-bottom: 10px; background: #16213e; border-radius: 8px; max-width: 800px; margin-left: auto; margin-right: auto; }
+        .image-preview.show { display: flex; align-items: center; gap: 10px; }
+        .image-preview img { max-height: 80px; border-radius: 8px; }
+        .image-preview-remove { background: #e94560; border: none; color: white; width: 24px; height: 24px; border-radius: 50%; cursor: pointer; font-size: 16px; }
+        .input-wrapper { display: flex; gap: 10px; max-width: 800px; margin: 0 auto; align-items: flex-end; }
         .input-wrapper textarea { flex: 1; padding: 12px 16px; background: #16213e; border: 1px solid #333; color: #eee; border-radius: 12px; resize: none; font-size: 14px; font-family: inherit; min-height: 48px; max-height: 200px; }
         .input-wrapper textarea:focus { outline: none; border-color: #0f3460; }
+        .input-btns { display: flex; gap: 8px; }
+        .upload-btn { padding: 12px 16px; background: #16213e; border: 1px solid #333; color: #aaa; border-radius: 12px; cursor: pointer; font-size: 18px; }
+        .upload-btn:hover { background: #0f3460; color: #fff; }
         .send-btn { padding: 12px 24px; background: #e94560; border: none; color: #fff; border-radius: 12px; cursor: pointer; font-size: 14px; }
         .send-btn:hover { background: #ff6b6b; }
         .send-btn:disabled { background: #444; cursor: not-allowed; }
 
-        /* 设置弹窗 */
         .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); align-items: center; justify-content: center; z-index: 100; }
         .modal.show { display: flex; }
         .modal-content { background: #16213e; border-radius: 16px; padding: 24px; width: 90%; max-width: 500px; max-height: 80vh; overflow-y: auto; }
@@ -55,15 +64,17 @@
         .modal-close { background: none; border: none; color: #aaa; font-size: 24px; cursor: pointer; }
         .form-group { margin-bottom: 16px; }
         .form-group label { display: block; margin-bottom: 6px; color: #aaa; font-size: 13px; }
-        .form-group input, .form-group select { width: 100%; padding: 10px 12px; background: #1a1a2e; border: 1px solid #333; color: #eee; border-radius: 8px; font-size: 14px; }
-        .form-group input:focus, .form-group select:focus { outline: none; border-color: #0f3460; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px 12px; background: #1a1a2e; border: 1px solid #333; color: #eee; border-radius: 8px; font-size: 14px; font-family: inherit; }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: #0f3460; }
+        .form-group textarea { min-height: 80px; resize: vertical; }
         .save-btn { width: 100%; padding: 12px; background: #e94560; border: none; color: #fff; border-radius: 8px; cursor: pointer; font-size: 14px; margin-top: 10px; }
         .save-btn:hover { background: #ff6b6b; }
-        .preset-btns { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
-        .preset-btn { padding: 6px 12px; background: #1a1a2e; border: 1px solid #333; color: #aaa; border-radius: 6px; cursor: pointer; font-size: 12px; }
-        .preset-btn:hover { border-color: #e94560; color: #fff; }
+        
+        .api-tabs { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+        .api-tab { padding: 8px 16px; background: #1a1a2e; border: 1px solid #333; color: #aaa; border-radius: 8px; cursor: pointer; font-size: 13px; }
+        .api-tab:hover { border-color: #e94560; color: #fff; }
+        .api-tab.active { background: #e94560; border-color: #e94560; color: #fff; }
 
-        /* 响应式 */
         @media (max-width: 768px) {
             .sidebar { display: none; position: fixed; top: 0; left: 0; bottom: 0; z-index: 50; }
             .sidebar.show { display: flex; }
@@ -74,12 +85,16 @@
         .overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 40; }
         .overlay.show { display: block; }
 
-        /* 加载动画 */
         .typing { display: flex; gap: 4px; padding: 8px 0; }
         .typing span { width: 8px; height: 8px; background: #aaa; border-radius: 50%; animation: bounce 1.4s infinite ease-in-out; }
         .typing span:nth-child(1) { animation-delay: -0.32s; }
         .typing span:nth-child(2) { animation-delay: -0.16s; }
         @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
+
+        .image-modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); z-index: 200; align-items: center; justify-content: center; }
+        .image-modal.show { display: flex; }
+        .image-modal img { max-width: 90%; max-height: 90%; object-fit: contain; }
+        .image-modal-close { position: absolute; top: 20px; right: 20px; background: none; border: none; color: white; font-size: 32px; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -90,8 +105,12 @@
             <button class="new-chat-btn" onclick="newChat()">+ 新对话</button>
         </div>
         <div class="chat-list" id="chatList"></div>
-        <div class="settings-btn">
-            <button onclick="openSettings()">⚙️ API 设置</button>
+        <div class="sidebar-footer">
+            <div class="current-api">
+                <div class="current-api-label">当前 API</div>
+                <div class="current-api-name" id="currentApiName">未配置</div>
+            </div>
+            <button class="settings-btn" onclick="openSettings()">⚙️ API 设置</button>
         </div>
     </div>
 
@@ -102,9 +121,19 @@
         </div>
         <div class="messages" id="messages"></div>
         <div class="input-area">
+            <div class="image-preview" id="imagePreview">
+                <img id="previewImg" src="" alt="preview">
+                <button class="image-preview-remove" onclick="removeImage()">×</button>
+            </div>
             <div class="input-wrapper">
-                <textarea id="input" placeholder="输入消息..." rows="1" onkeydown="handleKeydown(event)"></textarea>
-                <button class="send-btn" id="sendBtn" onclick="sendMessage()">发送</button>
+                <textarea id="input" placeholder="输入消息... (支持粘贴图片)" rows="1" onkeydown="handleKeydown(event)" onpaste="handlePaste(event)"></textarea>
+                <div class="input-btns">
+                    <label class="upload-btn" title="上传图片">
+                        📷
+                        <input type="file" accept="image/*" style="display:none" onchange="handleFileSelect(event)">
+                    </label>
+                    <button class="send-btn" id="sendBtn" onclick="sendMessage()">发送</button>
+                </div>
             </div>
         </div>
     </div>
@@ -115,10 +144,14 @@
                 <h2>API 设置</h2>
                 <button class="modal-close" onclick="closeSettings()">×</button>
             </div>
-            <div class="preset-btns">
-                <button class="preset-btn" onclick="setPreset('aipaibox')">Aipaibox</button>
-                <button class="preset-btn" onclick="setPreset('openrouter')">OpenRouter</button>
-                <button class="preset-btn" onclick="setPreset('deepseek')">DeepSeek</button>
+            <div class="api-tabs" id="apiTabs">
+                <button class="api-tab active" onclick="switchApiTab(0)">API 1</button>
+                <button class="api-tab" onclick="switchApiTab(1)">API 2</button>
+                <button class="api-tab" onclick="switchApiTab(2)">API 3</button>
+            </div>
+            <div class="form-group">
+                <label>API 名称（自定义标识）</label>
+                <input type="text" id="apiName" placeholder="例如：Aipaibox Claude">
             </div>
             <div class="form-group">
                 <label>API 地址</label>
@@ -130,49 +163,49 @@
             </div>
             <div class="form-group">
                 <label>模型名称</label>
-                <input type="text" id="model" placeholder="claude-3-5-sonnet-20241022">
+                <input type="text" id="model" placeholder="claude-opus-4-7">
             </div>
             <div class="form-group">
                 <label>系统提示词（可选）</label>
-                <input type="text" id="systemPrompt" placeholder="You are a helpful assistant.">
+                <textarea id="systemPrompt" placeholder="你是一个有帮助的AI助手..."></textarea>
             </div>
-            <button class="save-btn" onclick="saveSettings()">保存设置</button>
+            <button class="save-btn" onclick="saveSettings()">保存并使用此 API</button>
         </div>
     </div>
 
+    <div class="image-modal" id="imageModal" onclick="closeImageModal()">
+        <button class="image-modal-close">×</button>
+        <img id="modalImage" src="" alt="">
+    </div>
+
     <script>
-        // 数据存储
         let chats = JSON.parse(localStorage.getItem('chats')) || [];
         let currentChatId = localStorage.getItem('currentChatId') || null;
-        let settings = JSON.parse(localStorage.getItem('settings')) || {
-            apiUrl: 'https://api.aipaibox.com/v1/chat/completions',
-            apiKey: '',
-            model: 'claude-sonnet-4-20250514',
-            systemPrompt: ''
-        };
+        let apiConfigs = JSON.parse(localStorage.getItem('apiConfigs')) || [
+            { name: 'Aipaibox', url: 'https://api.aipaibox.com/v1/chat/completions', key: '', model: 'claude-opus-4-7', systemPrompt: '' },
+            { name: 'OpenRouter', url: 'https://openrouter.ai/api/v1/chat/completions', key: '', model: 'anthropic/claude-sonnet-4', systemPrompt: '' },
+            { name: 'DeepSeek', url: 'https://api.deepseek.com/v1/chat/completions', key: '', model: 'deepseek-chat', systemPrompt: '' }
+        ];
+        let currentApiIndex = parseInt(localStorage.getItem('currentApiIndex')) || 0;
+        let currentEditingApi = 0;
+        let pendingImage = null;
 
-        // 初始化
         function init() {
             if (chats.length === 0) newChat();
             else renderChatList();
             if (currentChatId) loadChat(currentChatId);
+            updateCurrentApiDisplay();
             autoResize(document.getElementById('input'));
         }
 
-        // 新建对话
         function newChat() {
-            const chat = {
-                id: Date.now().toString(),
-                title: '新对话',
-                messages: []
-            };
+            const chat = { id: Date.now().toString(), title: '新对话', messages: [] };
             chats.unshift(chat);
             saveChats();
             loadChat(chat.id);
             renderChatList();
         }
 
-        // 渲染对话列表
         function renderChatList() {
             const list = document.getElementById('chatList');
             list.innerHTML = chats.map(chat => `
@@ -183,7 +216,6 @@
             `).join('');
         }
 
-        // 加载对话
         function loadChat(id) {
             currentChatId = id;
             localStorage.setItem('currentChatId', id);
@@ -195,25 +227,64 @@
             toggleSidebar(false);
         }
 
-        // 渲染消息
         function renderMessages(messages) {
             const container = document.getElementById('messages');
-            container.innerHTML = messages.map(msg => `
-                <div class="message ${msg.role}">
-                    <div class="message-avatar">${msg.role === 'user' ? '你' : 'AI'}</div>
-                    <div class="message-content">${escapeHtml(msg.content)}</div>
-                </div>
-            `).join('');
+            container.innerHTML = messages.map(msg => {
+                let content = '';
+                if (msg.image) {
+                    content += `<img class="message-image" src="${msg.image}" onclick="showImageModal('${msg.image}')" alt="uploaded image">`;
+                }
+                content += `<div>${escapeHtml(msg.content)}</div>`;
+                return `
+                    <div class="message ${msg.role}">
+                        <div class="message-avatar">${msg.role === 'user' ? '你' : 'AI'}</div>
+                        <div class="message-content">${content}</div>
+                    </div>
+                `;
+            }).join('');
             container.scrollTop = container.scrollHeight;
         }
 
-        // 发送消息
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) processImage(file);
+            event.target.value = '';
+        }
+
+        function handlePaste(event) {
+            const items = event.clipboardData?.items;
+            if (!items) return;
+            for (let item of items) {
+                if (item.type.startsWith('image/')) {
+                    event.preventDefault();
+                    processImage(item.getAsFile());
+                    break;
+                }
+            }
+        }
+
+        function processImage(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                pendingImage = e.target.result;
+                document.getElementById('previewImg').src = pendingImage;
+                document.getElementById('imagePreview').classList.add('show');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function removeImage() {
+            pendingImage = null;
+            document.getElementById('imagePreview').classList.remove('show');
+        }
+
         async function sendMessage() {
             const input = document.getElementById('input');
             const content = input.value.trim();
-            if (!content) return;
+            if (!content && !pendingImage) return;
 
-            if (!settings.apiKey) {
+            const config = apiConfigs[currentApiIndex];
+            if (!config.key) {
                 alert('请先设置 API Key');
                 openSettings();
                 return;
@@ -222,19 +293,23 @@
             const chat = chats.find(c => c.id === currentChatId);
             if (!chat) return;
 
-            // 添加用户消息
-            chat.messages.push({ role: 'user', content });
-            if (chat.title === '新对话') {
+            const userMessage = { role: 'user', content: content || '(图片)' };
+            if (pendingImage) userMessage.image = pendingImage;
+            
+            chat.messages.push(userMessage);
+            if (chat.title === '新对话' && content) {
                 chat.title = content.slice(0, 20) + (content.length > 20 ? '...' : '');
                 document.getElementById('chatTitle').textContent = chat.title;
                 renderChatList();
             }
             saveChats();
             renderMessages(chat.messages);
+            
+            const sentImage = pendingImage;
             input.value = '';
+            removeImage();
             autoResize(input);
 
-            // 显示加载
             const messagesDiv = document.getElementById('messages');
             const loadingDiv = document.createElement('div');
             loadingDiv.className = 'message assistant';
@@ -246,19 +321,32 @@
 
             try {
                 const apiMessages = [];
-                if (settings.systemPrompt) {
-                    apiMessages.push({ role: 'system', content: settings.systemPrompt });
+                if (config.systemPrompt) {
+                    apiMessages.push({ role: 'system', content: config.systemPrompt });
                 }
-                apiMessages.push(...chat.messages);
+                
+                for (const msg of chat.messages) {
+                    if (msg.image) {
+                        apiMessages.push({
+                            role: msg.role,
+                            content: [
+                                { type: 'image_url', image_url: { url: msg.image } },
+                                { type: 'text', text: msg.content || '请描述这张图片' }
+                            ]
+                        });
+                    } else {
+                        apiMessages.push({ role: msg.role, content: msg.content });
+                    }
+                }
 
-                const response = await fetch(settings.apiUrl, {
+                const response = await fetch(config.url, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${settings.apiKey}`
+                        'Authorization': `Bearer ${config.key}`
                     },
                     body: JSON.stringify({
-                        model: settings.model,
+                        model: config.model,
                         messages: apiMessages,
                         max_tokens: 4096
                     })
@@ -271,7 +359,6 @@
 
                 const data = await response.json();
                 const assistantContent = data.choices[0].message.content;
-
                 chat.messages.push({ role: 'assistant', content: assistantContent });
                 saveChats();
                 renderMessages(chat.messages);
@@ -284,7 +371,6 @@
             }
         }
 
-        // 删除对话
         function deleteChat(id) {
             if (!confirm('确定删除这个对话吗？')) return;
             chats = chats.filter(c => c.id !== id);
@@ -297,12 +383,10 @@
             renderChatList();
         }
 
-        // 设置相关
         function openSettings() {
-            document.getElementById('apiUrl').value = settings.apiUrl;
-            document.getElementById('apiKey').value = settings.apiKey;
-            document.getElementById('model').value = settings.model;
-            document.getElementById('systemPrompt').value = settings.systemPrompt;
+            currentEditingApi = currentApiIndex;
+            renderApiTabs();
+            loadApiForm(currentEditingApi);
             document.getElementById('settingsModal').classList.add('show');
         }
 
@@ -310,28 +394,65 @@
             document.getElementById('settingsModal').classList.remove('show');
         }
 
-        function saveSettings() {
-            settings.apiUrl = document.getElementById('apiUrl').value;
-            settings.apiKey = document.getElementById('apiKey').value;
-            settings.model = document.getElementById('model').value;
-            settings.systemPrompt = document.getElementById('systemPrompt').value;
-            localStorage.setItem('settings', JSON.stringify(settings));
-            closeSettings();
-            alert('设置已保存');
+        function renderApiTabs() {
+            const tabs = document.getElementById('apiTabs');
+            tabs.innerHTML = apiConfigs.map((config, i) => `
+                <button class="api-tab ${i === currentEditingApi ? 'active' : ''}" onclick="switchApiTab(${i})">
+                    ${config.name || 'API ' + (i + 1)}
+                </button>
+            `).join('');
         }
 
-        function setPreset(name) {
-            const presets = {
-                aipaibox: { url: 'https://api.aipaibox.com/v1/chat/completions', model: 'claude-sonnet-4-20250514' },
-                openrouter: { url: 'https://openrouter.ai/api/v1/chat/completions', model: 'anthropic/claude-sonnet-4' },
-                deepseek: { url: 'https://api.deepseek.com/v1/chat/completions', model: 'deepseek-chat' }
+        function switchApiTab(index) {
+            saveCurrentForm();
+            currentEditingApi = index;
+            renderApiTabs();
+            loadApiForm(index);
+        }
+
+        function loadApiForm(index) {
+            const config = apiConfigs[index];
+            document.getElementById('apiName').value = config.name || '';
+            document.getElementById('apiUrl').value = config.url || '';
+            document.getElementById('apiKey').value = config.key || '';
+            document.getElementById('model').value = config.model || '';
+            document.getElementById('systemPrompt').value = config.systemPrompt || '';
+        }
+
+        function saveCurrentForm() {
+            apiConfigs[currentEditingApi] = {
+                name: document.getElementById('apiName').value,
+                url: document.getElementById('apiUrl').value,
+                key: document.getElementById('apiKey').value,
+                model: document.getElementById('model').value,
+                systemPrompt: document.getElementById('systemPrompt').value
             };
-            const preset = presets[name];
-            document.getElementById('apiUrl').value = preset.url;
-            document.getElementById('model').value = preset.model;
         }
 
-        // 工具函数
+        function saveSettings() {
+            saveCurrentForm();
+            currentApiIndex = currentEditingApi;
+            localStorage.setItem('apiConfigs', JSON.stringify(apiConfigs));
+            localStorage.setItem('currentApiIndex', currentApiIndex);
+            updateCurrentApiDisplay();
+            closeSettings();
+            alert('设置已保存，当前使用: ' + apiConfigs[currentApiIndex].name);
+        }
+
+        function updateCurrentApiDisplay() {
+            const config = apiConfigs[currentApiIndex];
+            document.getElementById('currentApiName').textContent = config.name || '未配置';
+        }
+
+        function showImageModal(src) {
+            document.getElementById('modalImage').src = src;
+            document.getElementById('imageModal').classList.add('show');
+        }
+
+        function closeImageModal() {
+            document.getElementById('imageModal').classList.remove('show');
+        }
+
         function saveChats() {
             localStorage.setItem('chats', JSON.stringify(chats));
         }
