@@ -4,7 +4,6 @@ import { fetchChat } from './api.js';
 const memory = new MemoryManager();
 let currentImageBase64 = null;
 
-// 核心数据结构：会话列表与当前激活的会话
 let sessions = [];
 let currentSessionId = null;
 const SESSIONS_KEY = 'chat_sessions_v2';
@@ -34,15 +33,13 @@ function init() {
     els.apiKey.value = localStorage.getItem('api_key') || '';
     els.model.value = localStorage.getItem('api_model') || 'claude-opus-4-7';
     
-    // 初始化记忆
     const memData = memory.memory;
     Object.keys(els.mem).forEach(key => els.mem[key].value = memData[key]);
 
-    // 初始化多会话系统
     loadSessions();
 }
 
-// === 会话管理逻辑 ===
+// === 会话管理 ===
 function loadSessions() {
     const saved = localStorage.getItem(SESSIONS_KEY);
     sessions = saved ? JSON.parse(saved) : [];
@@ -61,21 +58,15 @@ function saveSessions() {
 }
 
 function createNewSession() {
-    const newSession = {
-        id: Date.now().toString(),
-        title: '新对话',
-        messages: []
-    };
-    sessions.unshift(newSession); // 插入到最前
+    const newSession = { id: Date.now().toString(), title: '新对话', messages: [] };
+    sessions.unshift(newSession);
     switchSession(newSession.id);
 }
 
 function switchSession(id) {
-    // 容错：如果找不到ID，退回第一个
     if (!sessions.find(s => s.id === id)) {
         id = sessions.length > 0 ? sessions[0].id : null;
     }
-    
     currentSessionId = id;
     saveSessions();
     renderSessionList();
@@ -84,7 +75,6 @@ function switchSession(id) {
 
 function deleteCurrentSession() {
     if (sessions.length <= 1) {
-        alert("这是最后一个对话了，直接清空内容即可。");
         sessions[0].messages = [];
         sessions[0].title = '新对话';
     } else {
@@ -104,7 +94,6 @@ function updateCurrentSession(messages, newTitle = null) {
     if (session) {
         session.messages = messages;
         if (newTitle && session.title === '新对话') {
-            // 自动截取用户第一句话作为标题
             session.title = newTitle.length > 12 ? newTitle.substring(0, 12) + '...' : newTitle;
         }
         saveSessions();
@@ -112,7 +101,7 @@ function updateCurrentSession(messages, newTitle = null) {
     }
 }
 
-// === UI 渲染逻辑 ===
+// === UI 渲染 ===
 function renderSessionList() {
     els.sessionList.innerHTML = '';
     sessions.forEach(session => {
@@ -127,10 +116,7 @@ function renderSessionList() {
 function renderCurrentChat() {
     els.historyBox.innerHTML = '';
     const messages = getCurrentMessages();
-    messages.forEach(msg => {
-        // UI 回显不带图片，防止卡顿
-        appendMessageUI(msg.role, msg.content, null, false);
-    });
+    messages.forEach(msg => appendMessageUI(msg.role, msg.content, null, false));
 }
 
 function appendMessageUI(role, content, imageBase64 = null, shouldScroll = true) {
@@ -148,12 +134,13 @@ function appendMessageUI(role, content, imageBase64 = null, shouldScroll = true)
     if (shouldScroll) els.historyBox.scrollTop = els.historyBox.scrollHeight;
 }
 
-// === 事件绑定 ===
-els.newChatBtn.addEventListener('click', createNewSession);
+// === 核心设置实时自动保存逻辑 ===
+els.apiKey.addEventListener('input', (e) => localStorage.setItem('api_key', e.target.value.trim()));
+els.model.addEventListener('change', (e) => localStorage.setItem('api_model', e.target.value));
 
-els.deleteBtn.addEventListener('click', () => {
-    if (confirm("确定要删除当前对话吗？")) deleteCurrentSession();
-});
+// === 其他事件绑定 ===
+els.newChatBtn.addEventListener('click', createNewSession);
+els.deleteBtn.addEventListener('click', () => { if (confirm("确定要删除当前对话吗？")) deleteCurrentSession(); });
 
 els.imageUpload.addEventListener('change', (e) => {
     const file = e.target.files[0];
@@ -168,14 +155,11 @@ els.imageUpload.addEventListener('change', (e) => {
 });
 
 els.saveMemBtn.addEventListener('click', () => {
-    localStorage.setItem('api_key', els.apiKey.value);
-    localStorage.setItem('api_model', els.model.value);
     const newMem = {};
     Object.keys(els.mem).forEach(key => newMem[key] = els.mem[key].value);
     memory.save(newMem);
-    
     const btn = els.saveMemBtn;
-    btn.textContent = '✅ 已保存';
+    btn.textContent = '✅ 已保存记忆';
     setTimeout(() => btn.textContent = '保存记忆配置', 1000);
 });
 
@@ -183,15 +167,12 @@ async function handleSend() {
     const text = els.input.value.trim();
     if (!text && !currentImageBase64) return;
 
-    const apiKey = els.apiKey.value;
+    const apiKey = els.apiKey.value.trim();
     if (!apiKey) return alert("请先填写 API Key");
 
-    // UI 立即反馈
     appendMessageUI('user', text, currentImageBase64);
-    
     const currentMessages = getCurrentMessages();
     
-    // 构造请求数据
     let userMsgContent = currentImageBase64 ? [
         { type: "text", text: text || "请分析图片" },
         { type: "image_url", image_url: { url: currentImageBase64 } }
@@ -203,7 +184,6 @@ async function handleSend() {
         { role: 'user', content: userMsgContent }
     ];
 
-    // 锁定输入区
     els.input.value = '';
     els.imagePreview.classList.add('hidden');
     currentImageBase64 = null;
@@ -213,12 +193,9 @@ async function handleSend() {
     try {
         const reply = await fetchChat(apiKey, els.model.value, requestMessages);
         appendMessageUI('assistant', reply);
-        
-        // 更新并保存状态
         currentMessages.push({ role: 'user', content: text || "[图片消息]" });
         currentMessages.push({ role: 'assistant', content: reply });
         
-        // 如果是该会话第一句话，把用户输入作为标题
         const titleExtract = text ? text : "图片对话";
         updateCurrentSession(currentMessages, titleExtract);
         
