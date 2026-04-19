@@ -3,30 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat - Personal Studio</title>
+    <title>Chat - 个人工作台</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
     <div class="container">
         <aside class="sidebar">
-            <h3>设置</h3>
-            <input type="password" id="api-key" placeholder="Aipaibox API Key" />
-            <select id="model-select">
-                <option value="claude-opus-4-7">Claude Opus 4.7</option>
-                <option value="claude-opus-4-6-thinking">Claude Opus 4.6 Thinking</option>
-                <option value="claude-opus-4-6">Claude Opus 4.6</option>
-            </select>
+            <div class="sidebar-section">
+                <button id="new-chat-btn" class="primary-btn">➕ 新建对话</button>
+            </div>
+
+            <div class="sidebar-section session-container">
+                <h3>对话历史</h3>
+                <ul id="session-list" class="session-list"></ul>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>模型设置</h3>
+                <input type="password" id="api-key" placeholder="Aipaibox API Key" />
+                <select id="model-select">
+                    <option value="claude-opus-4-7">Claude Opus 4.7</option>
+                    <option value="claude-opus-4-6-thinking">Claude Opus 4.6 Thinking</option>
+                </select>
+            </div>
             
-            <h3>分层记忆系统</h3>
-            <textarea id="mem-identity" placeholder="身份 (Identity)..."></textarea>
-            <textarea id="mem-context" placeholder="情境 (Context)..."></textarea>
-            <textarea id="mem-preferences" placeholder="偏好 (Preferences)..."></textarea>
-            <textarea id="mem-experience" placeholder="经验 (Experience)..."></textarea>
-            <textarea id="mem-activity" placeholder="活动 (Activity)..."></textarea>
-            <button id="save-mem-btn" class="primary-btn">保存配置与记忆</button>
-            <hr style="margin: 15px 0; border: 0; border-top: 1px solid #eee;">
-            <button id="clear-history-btn" class="danger-btn">🗑️ 清空当前对话</button>
+            <details class="memory-panel">
+                <summary>🧠 分层记忆系统 (点击展开)</summary>
+                <div class="memory-inputs">
+                    <textarea id="mem-identity" placeholder="身份 (Identity)..."></textarea>
+                    <textarea id="mem-context" placeholder="情境 (Context)..."></textarea>
+                    <textarea id="mem-preferences" placeholder="偏好 (Preferences)..."></textarea>
+                    <textarea id="mem-experience" placeholder="经验 (Experience)..."></textarea>
+                    <textarea id="mem-activity" placeholder="活动 (Activity)..."></textarea>
+                    <button id="save-mem-btn" class="secondary-btn">保存记忆配置</button>
+                </div>
+            </details>
+
+            <button id="delete-session-btn" class="danger-btn" style="margin-top: 15px;">🗑️ 删除当前对话</button>
         </aside>
 
         <main class="chat-area">
@@ -38,7 +52,7 @@
                     <label for="image-upload" class="custom-upload-btn">📷 图片</label>
                     <input type="file" id="image-upload" accept="image/*" style="display: none;" />
                     
-                    <textarea id="user-input" placeholder="输入消息... (Ctrl+Enter)"></textarea>
+                    <textarea id="user-input" placeholder="输入消息... (Ctrl+Enter 发送)"></textarea>
                     <button id="send-btn" class="send-btn">发送</button>
                 </div>
             </div>
