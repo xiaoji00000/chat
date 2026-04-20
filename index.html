@@ -2,157 +2,65 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI 智能助手</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Personal Study Workspace</title>
     <link rel="stylesheet" href="style.css">
-    <!-- Markdown 渲染 -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <!-- 代码高亮 -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11/styles/github-dark.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11"></script>
-    <!-- 数学公式（可选） -->
-    <script src="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 </head>
 <body>
-    <div class="app-container">
-        <!-- 侧边栏 -->
-        <aside class="sidebar" id="sidebar">
-            <div class="sidebar-header">
-                <h2>🤖 AI 助手</h2>
-                <button class="new-chat-btn" id="newChatBtn" title="新建对话">
-                    <span>＋</span> 新对话
-                </button>
+    <div class="container">
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <button id="new-chat-btn" class="primary-btn">➕ 新建对话</button>
             </div>
 
-            <!-- 搜索对话 -->
-            <div class="search-box">
-                <input type="text" id="searchInput" placeholder="🔍 搜索对话...">
+            <div class="sidebar-section session-container">
+                <h3>对话历史</h3>
+                <ul id="session-list" class="session-list"></ul>
             </div>
 
-            <!-- 对话列表 -->
-            <div class="chat-list" id="chatList">
-                <!-- 动态生成 -->
+            <div class="sidebar-section">
+                <h3>模型设置</h3>
+                <input type="password" id="api-key" placeholder="API Key" />
+                <select id="model-select">
+                    <option value="claude-opus-4-7">Claude Opus 4.7</option>
+                    <option value="claude-opus-4-6-thinking">Claude Opus 4.6 Thinking</option>
+                </select>
             </div>
+            
+            <details class="memory-panel">
+                <summary>🧠 分层记忆系统</summary>
+                <div class="memory-inputs">
+                    <textarea id="mem-identity" placeholder="身份 (例如: 严厉的 C++ 面试官)..."></textarea>
+                    <textarea id="mem-context" placeholder="情境..."></textarea>
+                    <textarea id="mem-preferences" placeholder="偏好 (例如: 只给思路，不给完整代码)..."></textarea>
+                    <textarea id="mem-experience" placeholder="经验..."></textarea>
+                    <textarea id="mem-activity" placeholder="活动..."></textarea>
+                    <button id="save-mem-btn" class="secondary-btn">保存配置</button>
+                </div>
+            </details>
 
-            <!-- 底部设置区 -->
-            <div class="sidebar-footer">
-                <!-- 记忆系统折叠 -->
-                <details class="settings-section">
-                    <summary>🧠 记忆系统</summary>
-                    <div class="memory-panel" id="memoryPanel">
-                        <div class="memory-stats">
-                            <span id="memoryCount">0 条记忆</span>
-                            <button class="btn-text" id="clearMemoryBtn">清空</button>
-                        </div>
-                        <div class="memory-list" id="memoryList"></div>
-                    </div>
-                </details>
-
-                <!-- 模型设置折叠 -->
-                <details class="settings-section">
-                    <summary>⚙️ 模型设置</summary>
-                    <div class="settings-content">
-                        <div class="setting-item">
-                            <label>API Key</label>
-                            <div class="api-key-wrapper">
-                                <input type="password" id="apiKeyInput" placeholder="输入 API Key">
-                                <button class="toggle-key-btn" id="toggleKeyBtn" title="显示/隐藏">👁</button>
-                            </div>
-                        </div>
-                        <div class="setting-item">
-                            <label>模型</label>
-                            <select id="modelSelect">
-                                <option value="deepseek-ai/DeepSeek-V3">DeepSeek-V3</option>
-                                <option value="deepseek-ai/DeepSeek-R1">DeepSeek-R1</option>
-                                <option value="Qwen/Qwen2.5-72B-Instruct">Qwen2.5-72B</option>
-                                <option value="meta-llama/Llama-3.1-405B">Llama-3.1-405B</option>
-                            </select>
-                        </div>
-                        <div class="setting-item">
-                            <label>温度: <span id="tempValue">0.7</span></label>
-                            <input type="range" id="tempSlider" min="0" max="2" step="0.1" value="0.7">
-                        </div>
-                    </div>
-                </details>
-
-                <!-- 删除按钮 -->
-                <button class="delete-chat-btn" id="deleteChatBtn">
-                    🗑 删除当前对话
-                </button>
-            </div>
+            <button id="delete-session-btn" class="danger-btn" style="margin-top: 15px;">🗑️ 删除当前对话</button>
         </aside>
 
-        <!-- 移动端侧边栏遮罩 -->
-        <div class="sidebar-overlay" id="sidebarOverlay"></div>
-
-        <!-- 主内容区 -->
-        <main class="main-content">
-            <!-- 顶部栏 -->
-            <header class="chat-header">
-                <button class="menu-btn" id="menuBtn" title="菜单">☰</button>
-                <div class="chat-title" id="chatTitle">新对话</div>
-                <div class="header-actions">
-                    <button class="btn-icon" id="exportBtn" title="导出对话">📥</button>
-                    <button class="btn-icon" id="scrollTopBtn" title="回到顶部">⬆</button>
-                </div>
-            </header>
-
-            <!-- 消息区域 -->
-            <div class="chat-messages" id="chatMessages">
-                <!-- 欢迎界面 -->
-                <div class="welcome-screen" id="welcomeScreen">
-                    <div class="welcome-icon">🤖</div>
-                    <h2>你好！我是 AI 助手</h2>
-                    <p>有什么我可以帮你的吗？</p>
-                    <div class="quick-actions">
-                        <button class="quick-btn" data-prompt="给我讲一个有趣的故事">📖 讲个故事</button>
-                        <button class="quick-btn" data-prompt="帮我写一段Python代码">💻 写代码</button>
-                        <button class="quick-btn" data-prompt="解释一下量子计算">🔬 科普知识</button>
-                        <button class="quick-btn" data-prompt="帮我润色一段文字">✍️ 文字润色</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 输入区域 -->
+        <main class="chat-area">
+            <div id="chat-history" class="chat-history"></div>
+            
             <div class="input-area">
-                <div class="input-container">
-                    <div class="input-actions-left">
-                        <button class="btn-icon" id="imageBtn" title="上传图片">🖼</button>
-                    </div>
-                    <div class="textarea-wrapper">
-                        <textarea
-                            id="messageInput"
-                            placeholder="输入消息... (Enter 发送, Shift+Enter 换行)"
-                            rows="1"
-                        ></textarea>
-                    </div>
-                    <button class="send-btn" id="sendBtn" title="发送">
-                        <span class="send-icon">➤</span>
-                    </button>
-                </div>
-                <div class="input-footer">
-                    <span class="char-count" id="charCount">0 字</span>
-                    <span class="model-info" id="modelInfo">DeepSeek-V3</span>
+                <div id="image-preview" class="image-preview hidden"></div>
+                <div class="controls">
+                    <label for="image-upload" class="custom-upload-btn">📷 图片</label>
+                    <input type="file" id="image-upload" accept="image/*" style="display: none;" />
+                    
+                    <textarea id="user-input" placeholder="输入问题或代码... (Ctrl+Enter 发送)"></textarea>
+                    <button id="send-btn" class="send-btn">发送</button>
                 </div>
             </div>
         </main>
     </div>
 
-    <!-- 图片预览弹窗 -->
-    <div class="modal" id="imageModal">
-        <div class="modal-content">
-            <span class="modal-close" id="modalClose">&times;</span>
-            <img id="modalImage" src="" alt="预览">
-        </div>
-    </div>
-
-    <!-- Toast 提示 -->
-    <div class="toast-container" id="toastContainer"></div>
-
-    <script src="js/utils.js"></script>
-    <script src="js/memory.js"></script>
-    <script src="js/api.js"></script>
-    <script src="js/main.js"></script>
+    <script type="module" src="js/main.js"></script>
 </body>
 </html>
