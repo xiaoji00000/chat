@@ -167,20 +167,40 @@ function handleImageFile(file) {
 // 按钮上传图片
 els.imageUpload.addEventListener('change', (e) => handleImageFile(e.target.files[0]));
 
-// === 新增：监听 Ctrl+V 粘贴事件抓取图片 ===
+// === 终极修复：兼容所有截图软件和浏览器的粘贴事件 ===
 els.input.addEventListener('paste', (e) => {
-    const items = (e.clipboardData || e.originalEvent.clipboardData).items;
-    for (let index in items) {
-        const item = items[index];
-        if (item.kind === 'file' && item.type.indexOf('image/') !== -1) {
-            const blob = item.getAsFile();
-            handleImageFile(blob);
-            e.preventDefault(); // 阻止将图片名作为文本粘贴进输入框
-            break;
+    // 阻止浏览器报错，确保剪贴板对象存在
+    if (!e.clipboardData) return;
+
+    let imageFile = null;
+
+    // 策略 1: 优先从 files 集合里找 (兼容直接复制的本地图片文件)
+    if (e.clipboardData.files && e.clipboardData.files.length > 0) {
+        for (let i = 0; i < e.clipboardData.files.length; i++) {
+            if (e.clipboardData.files[i].type.startsWith('image/')) {
+                imageFile = e.clipboardData.files[i];
+                break;
+            }
         }
     }
-});
 
+    // 策略 2: 如果 files 里没有，再从 items 集合里找 (兼容 QQ/微信/Snipping Tool 的内存截图)
+    if (!imageFile && e.clipboardData.items) {
+        for (let i = 0; i < e.clipboardData.items.length; i++) {
+            const item = e.clipboardData.items[i];
+            if (item.type.indexOf('image') !== -1) {
+                imageFile = item.getAsFile();
+                break;
+            }
+        }
+    }
+
+    // 如果成功提取到了图片
+    if (imageFile) {
+        handleImageFile(imageFile);
+        e.preventDefault(); // 关键：截断事件，防止浏览器把图片当成乱码文本塞进输入框
+    }
+});
 els.saveMemBtn.addEventListener('click', () => {
     const newMem = {};
     Object.keys(els.mem).forEach(key => newMem[key] = els.mem[key].value);
