@@ -2,8 +2,13 @@ import { MemoryManager } from './memory.js';
 import { fetchChat } from './api.js';
 
 const memory = new MemoryManager();
-let currentImageBase64 = null;
 
+let currentImageBase64 = null;
+// === 在 const memory = new MemoryManager(); 下方添加这行 ===
+marked.setOptions({
+    gfm: true,
+    breaks: true, // 允许回车直接换行
+});
 let sessions = [];
 let currentSessionId = null;
 const SESSIONS_KEY = 'chat_sessions_v4'; // 升版本，防止旧脏数据干扰
