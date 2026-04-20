@@ -63,3 +63,72 @@ button:hover { opacity: 0.9; }
     .message { max-width: 95%; }
     .controls { height: 50px; }
 }
+/* === Markdown 深度渲染样式 (补充) === */
+
+/* 段落与列表间距 */
+.message p { margin-bottom: 8px; line-height: 1.6; }
+.message p:last-child { margin-bottom: 0; }
+.message ul, .message ol { padding-left: 20px; margin-bottom: 8px; }
+.message li { margin-bottom: 4px; }
+
+/* 修复加粗样式 (确保加粗足够醒目) */
+.message strong { font-weight: 600; color: #0f172a; }
+.message.user strong { color: #fff; } /* 用户蓝底气泡中的粗体保持白色 */
+
+/* 修复 Blockquote 引用样式 */
+.message blockquote {
+    margin: 10px 0;
+    padding: 10px 14px;
+    border-left: 4px solid #94a3b8;
+    background: #f8fafc;
+    color: #475569;
+    border-radius: 0 6px 6px 0;
+    font-size: 14px;
+}
+.message.user blockquote {
+    background: rgba(255, 255, 255, 0.1);
+    border-left-color: rgba(255, 255, 255, 0.5);
+    color: #e0f2fe;
+}
+
+/* 修复 Table 表格样式 */
+.message table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 12px 0;
+    font-size: 14px;
+    border-radius: 6px;
+    overflow: hidden;
+}
+.message th, .message td {
+    border: 1px solid #cbd5e1;
+    padding: 8px 12px;
+    text-align: left;
+}
+.message th { 
+    background: #e2e8f0; 
+    font-weight: 600; 
+    color: #1e293b;
+}
+.message tr:nth-child(even) { background: #f8fafc; }
+.message.user table th, .message.user table td { border-color: #60a5fa; }
+.message.user table th { background: #2563eb; color: white; }
+.message.user table tr:nth-child(even) { background: #3b82f6; }
+
+
+/* === 优化：降低删除按钮的视觉权重 === */
+/* 找到原来的 .danger-btn 并用下面的覆盖，或者直接追加在最底部利用 CSS 优先级覆盖 */
+.danger-btn { 
+    background: transparent !important; /* 背景透明 */
+    color: #dc2626 !important; /* 只有文字是红色的 */
+    border: 1px dashed #fecaca !important; /* 虚线边框，进一步降低权重 */
+    padding: 10px; 
+    border-radius: 6px; 
+    cursor: pointer; 
+    font-weight: 500; 
+    transition: all 0.2s;
+}
+.danger-btn:hover { 
+    background: #fee2e2 !important; 
+    border-style: solid !important;
+}
