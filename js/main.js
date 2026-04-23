@@ -4,7 +4,6 @@ import { fetchChat } from './api.js';
 const memory = new MemoryManager();
 
 let currentImageBase64 = null;
-// === 在 const memory = new MemoryManager(); 下方添加这行 ===
 marked.setOptions({
     gfm: true,
     breaks: true, // 允许回车直接换行
@@ -15,8 +14,7 @@ const SESSIONS_KEY = 'chat_sessions_v4'; // 升版本，防止旧脏数据干扰
 const MAX_HISTORY_LENGTH = 20;
 
 const els = {
-    apiKeyCC: document.getElementById('api-key-cc'),
-    apiKeyOpenAI: document.getElementById('api-key-openai'),
+    apiKey: document.getElementById('api-key'), // 恢复原版，绑定原始输入框
     model: document.getElementById('model-select'),
     input: document.getElementById('user-input'),
     sendBtn: document.getElementById('send-btn'),
@@ -36,10 +34,23 @@ const els = {
     saveMemBtn: document.getElementById('save-mem-btn')
 };
 
+// === 核心修复：根据当前选中的模型，动态切换输入框里显示的 Key ===
+function updateKeyInputByModel(modelName) {
+    if (!els.apiKey) return;
+    if (modelName.includes("gpt")) {
+        els.apiKey.value = localStorage.getItem('api_key_openai') || '';
+        els.apiKey.placeholder = "填 OpenAI 分组 Key";
+    } else {
+        els.apiKey.value = localStorage.getItem('api_key_cc') || '';
+        els.apiKey.placeholder = "填 CC 分组 Key";
+    }
+}
+
 function init() {
-    if (els.apiKeyCC) els.apiKeyCC.value = localStorage.getItem('api_key_cc') || '';
-    if (els.apiKeyOpenAI) els.apiKeyOpenAI.value = localStorage.getItem('api_key_openai') || '';
     els.model.value = localStorage.getItem('api_model') || 'claude-opus-4-7';
+    // 初始化时，根据默认模型加载对应的 Key
+    updateKeyInputByModel(els.model.value);
+    
     const memData = memory.memory;
     Object.keys(els.mem).forEach(key => els.mem[key].value = memData[key]);
     loadSessions();
@@ -143,7 +154,6 @@ function appendMessageUI(role, content, imageBase64 = null, shouldScroll = true)
     if (shouldScroll) els.historyBox.scrollTop = els.historyBox.scrollHeight;
 }
 
-// === 新增：动态加载动画 UI ===
 function showTypingIndicator() {
     const div = document.createElement('div');
     div.className = 'message assistant typing-indicator';
@@ -153,16 +163,33 @@ function showTypingIndicator() {
     return div;
 }
 
-// 基础事件绑定
+// === 核心修复：输入 Key 时，根据当前模型存到对应的坑位 ===
 ['input', 'change', 'blur'].forEach(evt => {
-    if (els.apiKeyCC) els.apiKeyCC.addEventListener(evt, (e) => localStorage.setItem('api_key_cc', e.target.value.trim()));
-    if (els.apiKeyOpenAI) els.apiKeyOpenAI.addEventListener(evt, (e) => localStorage.setItem('api_key_openai', e.target.value.trim()));
+    if (els.apiKey) {
+        els.apiKey.addEventListener(evt, (e) => {
+            const val = e.target.value.trim();
+            const currentModel = els.model.value;
+            if (currentModel.includes("gpt")) {
+                localStorage.setItem('api_key_openai', val);
+            } else {
+                localStorage.setItem('api_key_cc', val);
+            }
+        });
+    }
 });
-els.model.addEventListener('change', (e) => localStorage.setItem('api_model', e.target.value));
+
+// === 核心修复：切换模型时，立马把输入框里的 Key 替换掉 ===
+if (els.model) {
+    els.model.addEventListener('change', (e) => {
+        const selectedModel = e.target.value;
+        localStorage.setItem('api_model', selectedModel);
+        updateKeyInputByModel(selectedModel);
+    });
+}
+
 els.newChatBtn.addEventListener('click', createNewSession);
 els.deleteBtn.addEventListener('click', () => { if (confirm("确认删除此对话？")) deleteCurrentSession(); });
 
-// 图片转 Base64 逻辑封装
 function handleImageFile(file) {
     if (!file || file.type.indexOf('image') === -1) return;
     const reader = new FileReader();
@@ -174,17 +201,12 @@ function handleImageFile(file) {
     reader.readAsDataURL(file);
 }
 
-// 按钮上传图片
 els.imageUpload.addEventListener('change', (e) => handleImageFile(e.target.files[0]));
 
-// === 终极修复：兼容所有截图软件和浏览器的粘贴事件 ===
 els.input.addEventListener('paste', (e) => {
-    // 阻止浏览器报错，确保剪贴板对象存在
     if (!e.clipboardData) return;
 
     let imageFile = null;
-
-    // 策略 1: 优先从 files 集合里找 (兼容直接复制的本地图片文件)
     if (e.clipboardData.files && e.clipboardData.files.length > 0) {
         for (let i = 0; i < e.clipboardData.files.length; i++) {
             if (e.clipboardData.files[i].type.startsWith('image/')) {
@@ -194,7 +216,6 @@ els.input.addEventListener('paste', (e) => {
         }
     }
 
-    // 策略 2: 如果 files 里没有，再从 items 集合里找 (兼容 QQ/微信/Snipping Tool 的内存截图)
     if (!imageFile && e.clipboardData.items) {
         for (let i = 0; i < e.clipboardData.items.length; i++) {
             const item = e.clipboardData.items[i];
@@ -205,12 +226,12 @@ els.input.addEventListener('paste', (e) => {
         }
     }
 
-    // 如果成功提取到了图片
     if (imageFile) {
         handleImageFile(imageFile);
-        e.preventDefault(); // 关键：截断事件，防止浏览器把图片当成乱码文本塞进输入框
+        e.preventDefault(); 
     }
 });
+
 els.saveMemBtn.addEventListener('click', () => {
     const newMem = {};
     Object.keys(els.mem).forEach(key => newMem[key] = els.mem[key].value);
@@ -223,55 +244,40 @@ async function handleSend() {
     const text = els.input.value.trim();
     if (!text && !currentImageBase64) return;
     
-    // === 动态路由：双 Key 判断逻辑 ===
-    const currentModel = els.model.value;
-    let apiKey = "";
-    
-    if (currentModel.includes("gpt")) {
-        apiKey = els.apiKeyOpenAI ? els.apiKeyOpenAI.value.trim() : "";
-        if (!apiKey) return alert("请填写 OpenAI 分组 Key");
-    } else {
-        apiKey = els.apiKeyCC ? els.apiKeyCC.value.trim() : "";
-        if (!apiKey) return alert("请填写 CC 分组 Key");
-    }
+    // 发送时直接抓取当前框里的 Key，判断逻辑已经在切换模型时做完了
+    const apiKey = els.apiKey ? els.apiKey.value.trim() : "";
+    if (!apiKey) return alert("请填写对应的 API Key");
 
-    // 1. 立即上屏展示
     appendMessageUI('user', text, currentImageBase64);
     
-    // === 核心修复：不管 API 成不成功，先把用户发的东西死死写入本地缓存 ===
     const currentMessages = getCurrentMessages();
     currentMessages.push({ role: 'user', content: text || "[图片]" });
     updateCurrentSession(currentMessages, text || "图片对话");
 
-    // 构造请求数据 (只带最后20条防爆炸)
     let userMsgContent = currentImageBase64 ? [
         { type: "text", text: text || "解释图片" },
         { type: "image_url", image_url: { url: currentImageBase64 } }
     ] : text;
     const requestMessages = [
         { role: 'system', content: memory.getSystemPrompt() },
-        ...currentMessages.slice(-MAX_HISTORY_LENGTH).slice(0, -1), // 截取历史并剃掉刚刚压入还未发送的最新条目
+        ...currentMessages.slice(-MAX_HISTORY_LENGTH).slice(0, -1),
         { role: 'user', content: userMsgContent }
     ];
 
-    // 清空输入区，按钮进入锁定状态
     els.input.value = '';
     els.imagePreview.classList.add('hidden');
     currentImageBase64 = null;
     els.sendBtn.disabled = true;
     
-    // 2. 呼出打字机动画
     const typingBubble = showTypingIndicator();
 
     try {
         const reply = await fetchChat(apiKey, els.model.value, requestMessages);
-        // 请求成功：移除动画，渲染回复，写入缓存
         typingBubble.remove();
         appendMessageUI('assistant', reply);
         currentMessages.push({ role: 'assistant', content: reply });
         updateCurrentSession(currentMessages);
     } catch (err) {
-        // 请求失败：移除动画，渲染红色报错。因为前面已经执行了 updateCurrentSession，所以你打的字不会丢
         typingBubble.remove();
         appendMessageUI('assistant', `❌ 错误: ${err.message}`);
     } finally {
