@@ -15,7 +15,8 @@ const SESSIONS_KEY = 'chat_sessions_v4'; // 升版本，防止旧脏数据干扰
 const MAX_HISTORY_LENGTH = 20;
 
 const els = {
-    apiKey: document.getElementById('api-key'),
+    apiKeyCC: document.getElementById('api-key-cc'),
+    apiKeyOpenAI: document.getElementById('api-key-openai'),
     model: document.getElementById('model-select'),
     input: document.getElementById('user-input'),
     sendBtn: document.getElementById('send-btn'),
@@ -36,7 +37,8 @@ const els = {
 };
 
 function init() {
-    els.apiKey.value = localStorage.getItem('api_key') || '';
+    if (els.apiKeyCC) els.apiKeyCC.value = localStorage.getItem('api_key_cc') || '';
+    if (els.apiKeyOpenAI) els.apiKeyOpenAI.value = localStorage.getItem('api_key_openai') || '';
     els.model.value = localStorage.getItem('api_model') || 'claude-opus-4-7';
     const memData = memory.memory;
     Object.keys(els.mem).forEach(key => els.mem[key].value = memData[key]);
@@ -152,7 +154,10 @@ function showTypingIndicator() {
 }
 
 // 基础事件绑定
-['input', 'change', 'blur'].forEach(evt => els.apiKey.addEventListener(evt, (e) => localStorage.setItem('api_key', e.target.value.trim())));
+['input', 'change', 'blur'].forEach(evt => {
+    if (els.apiKeyCC) els.apiKeyCC.addEventListener(evt, (e) => localStorage.setItem('api_key_cc', e.target.value.trim()));
+    if (els.apiKeyOpenAI) els.apiKeyOpenAI.addEventListener(evt, (e) => localStorage.setItem('api_key_openai', e.target.value.trim()));
+});
 els.model.addEventListener('change', (e) => localStorage.setItem('api_model', e.target.value));
 els.newChatBtn.addEventListener('click', createNewSession);
 els.deleteBtn.addEventListener('click', () => { if (confirm("确认删除此对话？")) deleteCurrentSession(); });
@@ -217,8 +222,18 @@ els.saveMemBtn.addEventListener('click', () => {
 async function handleSend() {
     const text = els.input.value.trim();
     if (!text && !currentImageBase64) return;
-    const apiKey = els.apiKey.value.trim();
-    if (!apiKey) return alert("请填写 API Key");
+    
+    // === 动态路由：双 Key 判断逻辑 ===
+    const currentModel = els.model.value;
+    let apiKey = "";
+    
+    if (currentModel.includes("gpt")) {
+        apiKey = els.apiKeyOpenAI ? els.apiKeyOpenAI.value.trim() : "";
+        if (!apiKey) return alert("请填写 OpenAI 分组 Key");
+    } else {
+        apiKey = els.apiKeyCC ? els.apiKeyCC.value.trim() : "";
+        if (!apiKey) return alert("请填写 CC 分组 Key");
+    }
 
     // 1. 立即上屏展示
     appendMessageUI('user', text, currentImageBase64);
